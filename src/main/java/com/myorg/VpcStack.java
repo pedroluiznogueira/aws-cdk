@@ -18,7 +18,7 @@ public class VpcStack extends Stack {
 
         // code that defines the stack
 
-        Vpc vpc = Vpc.Builder.create(this, "Vpc01")
+        vpc = Vpc.Builder.create(this, "Vpc01")
                 .maxAzs(3) // max qtd zones
                 .build();
     }

@@ -13,10 +13,13 @@ public class AwsCdkApp {
         VpcStack vpcStack = new VpcStack(app, "Vpc");
 
         // we need to specify wich vpc this cluster is going to be deployed to
+        // specify the dependencies to avoid confusions
         ClusterStack clusterStack = new ClusterStack(app, "Cluster", vpcStack.getVpc());
+        clusterStack.addDependency(vpcStack);
 
         // specify the dependencies to avoid confusions
-        clusterStack.addDependency(vpcStack);
+        Service01Stack service01Stack = new Service01Stack(app, "Service01", clusterStack.getCluster());
+        service01Stack.addDependency(clusterStack);
 
         app.synth();
     }
