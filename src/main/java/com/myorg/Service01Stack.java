@@ -43,6 +43,7 @@ public class Service01Stack extends Stack {
                                         .streamPrefix("Service01")
                                         .build()))
                                 .build())
+                .publicLoadBalancer(true)
                 .build();
     }
 }
