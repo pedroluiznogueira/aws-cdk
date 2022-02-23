@@ -1,9 +1,6 @@
 package com.myorg;
 
-import software.amazon.awscdk.Duration;
-import software.amazon.awscdk.RemovalPolicy;
-import software.amazon.awscdk.Stack;
-import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.*;
 import software.amazon.awscdk.services.applicationautoscaling.EnableScalingProps;
 import software.amazon.awscdk.services.ecs.*;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedFargateService;
@@ -11,6 +8,9 @@ import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskI
 import software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck;
 import software.amazon.awscdk.services.logs.LogGroup;
 import software.constructs.Construct;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Service01Stack extends Stack {
 
@@ -20,6 +20,12 @@ public class Service01Stack extends Stack {
 
     public Service01Stack(final Construct scope, final String id, final StackProps props, Cluster cluster) {
         super(scope, id, props);
+
+        Map<String, String> envVariables = new HashMap<>();
+        envVariables.put("SPRING_DATASOURCE_URL", "jdbc:mariadb://" + Fn.importValue("rds-endpoint")
+                + ":3306/product-service?createDatabaseIfNotExist=true");
+        envVariables.put("SPRING_DATASOURCE_USERNAME", "admin");
+        envVariables.put("SPRING_DATASOURCE_PASSWORD", Fn.importValue("rds-password"));
 
         // code that defines the stack
         ApplicationLoadBalancedFargateService service01 = ApplicationLoadBalancedFargateService.Builder.create(this, "ALB01")
@@ -32,7 +38,7 @@ public class Service01Stack extends Stack {
                 .taskImageOptions(
                         ApplicationLoadBalancedTaskImageOptions.builder()
                                 .containerName("product-service")
-                                .image(ContainerImage.fromRegistry("pedroluiznogueira/product-service:0.0.4"))
+                                .image(ContainerImage.fromRegistry("pedroluiznogueira/product-service:0.0.6"))
                                 .containerPort(8080)
                                 .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
                                         .logGroup(LogGroup.Builder.create(this, "Service01LogGroup")
@@ -41,6 +47,7 @@ public class Service01Stack extends Stack {
                                                 .build())
                                         .streamPrefix("Service01")
                                         .build()))
+                                .environment(envVariables)
                                 .build())
                 .publicLoadBalancer(true)
                 .build();
