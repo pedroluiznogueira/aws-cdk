@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Service02Stack extends Stack {
-
     public Service02Stack(final Construct scope, final String id, Cluster cluster) {
         this(scope, id, null, cluster);
     }
@@ -25,7 +24,6 @@ public class Service02Stack extends Stack {
         Map<String, String> envVariables = new HashMap<>();
         envVariables.put("AWS_REGION", "us-east-1");
 
-        // code that defines the stack
         ApplicationLoadBalancedFargateService service02 = ApplicationLoadBalancedFargateService.Builder.create(this, "ALB02")
                 .serviceName("service-02")
                 .cluster(cluster)
@@ -50,25 +48,21 @@ public class Service02Stack extends Stack {
                 .publicLoadBalancer(true)
                 .build();
 
-        // health check with target group
         service02.getTargetGroup().configureHealthCheck(new HealthCheck.Builder()
                 .path("/actuator/health")
                 .port("9090")
                 .healthyHttpCodes("200")
                 .build());
 
-        // auto-scaling set up
         ScalableTaskCount scalableTaskCount = service02.getService().autoScaleTaskCount(EnableScalingProps.builder()
                 .minCapacity(2)
                 .maxCapacity(4)
                 .build());
 
-        // auto-scaling config
         scalableTaskCount.scaleOnCpuUtilization("Service02AutoScaling", CpuUtilizationScalingProps.builder()
                 .targetUtilizationPercent(50)
                 .scaleInCooldown(Duration.seconds(60))
                 .scaleOutCooldown(Duration.seconds(60))
                 .build());
-
     }
 }

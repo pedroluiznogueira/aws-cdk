@@ -29,7 +29,6 @@ public class AwsCdkApp {
         service01Stack.addDependency(snsStack);
 
         Service02Stack service02Stack = new Service02Stack(app, "Service02", clusterStack.getCluster());
-        service02Stack.addDependency(clusterStack);
 
         app.synth();
     }
