@@ -12,8 +12,6 @@ public class AwsCdkApp {
 
         VpcStack vpcStack = new VpcStack(app, "Vpc");
 
-        // we need to specify wich vpc this cluster is going to be deployed to
-        // specify the dependencies to avoid confusions
         ClusterStack clusterStack = new ClusterStack(app, "Cluster", vpcStack.getVpc());
         clusterStack.addDependency(vpcStack);
 
@@ -22,15 +20,22 @@ public class AwsCdkApp {
 
         SnsStack snsStack = new SnsStack(app, "Sns");
 
-        // specify the dependencies to avoid confusions
-        Service01Stack service01Stack = new Service01Stack(app, "Service01", clusterStack.getCluster(), snsStack.getProductEventsTopic());
+        Service01Stack service01Stack = new Service01Stack(app, "Service01",
+                clusterStack.getCluster(), snsStack.getProductEventsTopic());
         service01Stack.addDependency(clusterStack);
         service01Stack.addDependency(rdsStack);
         service01Stack.addDependency(snsStack);
 
-        Service02Stack service02Stack = new Service02Stack(app, "Service02", clusterStack.getCluster());
+        DdbStack ddbStack = new DdbStack(app, "Ddb");
+
+        Service02Stack service02Stack = new Service02Stack(app, "Service02",
+                clusterStack.getCluster(), snsStack.getProductEventsTopic());
+        service02Stack.addDependency(clusterStack);
+        service02Stack.addDependency(snsStack);
+        service02Stack.addDependency(ddbStack);
 
         app.synth();
     }
 }
+
 
