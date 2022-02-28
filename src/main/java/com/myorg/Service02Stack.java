@@ -67,7 +67,7 @@ public class Service02Stack extends Stack {
                 .taskImageOptions(
                         ApplicationLoadBalancedTaskImageOptions.builder()
                                 .containerName("consumer-service")
-                                .image(ContainerImage.fromRegistry("pedroluiznogueira/consumer-service:4.0.0"))
+                                .image(ContainerImage.fromRegistry("pedroluiznogueira/consumer-service:5.0.0"))
                                 .containerPort(8081)
                                 .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
                                         .logGroup(LogGroup.Builder.create(this, "Service02LogGroup")
@@ -88,8 +88,8 @@ public class Service02Stack extends Stack {
                 .build());
 
         ScalableTaskCount scalableTaskCount = service02.getService().autoScaleTaskCount(EnableScalingProps.builder()
-                .minCapacity(1)
-                .maxCapacity(1)
+                .minCapacity(0)
+                .maxCapacity(3)
                 .build());
 
         scalableTaskCount.scaleOnCpuUtilization("Service02AutoScaling", CpuUtilizationScalingProps.builder()
