@@ -36,12 +36,12 @@ public class Service01Stack extends Stack {
                 .cluster(cluster)
                 .cpu(512)
                 .memoryLimitMiB(1024)
-                .desiredCount(2)
+                .desiredCount(1)
                 .listenerPort(8080)
                 .taskImageOptions(
                         ApplicationLoadBalancedTaskImageOptions.builder()
                                 .containerName("product-service")
-                                .image(ContainerImage.fromRegistry("pedroluiznogueira/product-service:0.0.8"))
+                                .image(ContainerImage.fromRegistry("pedroluiznogueira/product-service:1.0.0"))
                                 .containerPort(8080)
                                 .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
                                         .logGroup(LogGroup.Builder.create(this, "Service01LogGroup")
@@ -64,8 +64,8 @@ public class Service01Stack extends Stack {
 
         // auto-scaling set up
         ScalableTaskCount scalableTaskCount = service01.getService().autoScaleTaskCount(EnableScalingProps.builder()
-                .minCapacity(2)
-                .maxCapacity(4)
+                .minCapacity(1)
+                .maxCapacity(1)
                 .build());
 
         // auto-scaling config
