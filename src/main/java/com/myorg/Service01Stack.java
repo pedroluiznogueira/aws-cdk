@@ -41,12 +41,12 @@ public class Service01Stack extends Stack {
                 .cluster(cluster)
                 .cpu(512)
                 .memoryLimitMiB(1024)
-                .desiredCount(1)
+                .desiredCount(2)
                 .listenerPort(8080)
                 .taskImageOptions(
                         ApplicationLoadBalancedTaskImageOptions.builder()
                                 .containerName("product-service")
-                                .image(ContainerImage.fromRegistry("pedroluiznogueira/product-service:3.0.0"))
+                                .image(ContainerImage.fromRegistry("pedroluiznogueira/product-service:4.0.0"))
                                 .containerPort(8080)
                                 .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
                                         .logGroup(LogGroup.Builder.create(this, "Service01LogGroup")
@@ -63,7 +63,7 @@ public class Service01Stack extends Stack {
         // health check with target group
         service01.getTargetGroup().configureHealthCheck(new HealthCheck.Builder()
                 .path("/actuator/health")
-                .port("8080")
+                .port("8081")
                 .healthyHttpCodes("200")
                 .build());
 
